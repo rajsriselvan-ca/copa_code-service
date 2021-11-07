@@ -1,11 +1,12 @@
 const express = require('express');
 app = express();
+const cors = require('cors');
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
 
 require('dotenv').config();
-
-app.get('/', (req, res) => {
-    res.send("Heyy Pattuuuu paapa!!")
-});
+app.use(cors());
+app.use('/', require('./routes/login'))
 
 const PORT = process.env.PORT || 4000
 
