@@ -8,10 +8,10 @@ exports.userRegister = (request, response) => {
 
     connection.query(`INSERT INTO registered_users (user_name, user_password, submission_date) VALUES
     ("${user_name}", "${user_password}", "${submission_date}")`,
-        (err, result) => {
-            console.log("err-->>", err);
+        (error, result) => {
+            if(error) response.send("error");
+            else response.send("success");
         });
-    response.send("Heyy there!!")
 };
 
 exports.page = (request, response) => {
