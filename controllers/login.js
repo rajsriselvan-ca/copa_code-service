@@ -14,6 +14,10 @@ exports.userRegister = (request, response) => {
         });
 };
 
-exports.page = (request, response) => {
-    response.send("Heyy Raju")
+exports.getUsers = (request, response) => {
+    connection.query("select * from registered_users", 
+    (error, result) => {
+        if(error) response.send("error");
+        else response.send(result);
+    });
 };
