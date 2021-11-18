@@ -7,6 +7,7 @@ app.use(express.json())
 require('dotenv').config();
 app.use(cors());
 app.use('/', require('./routes/login'))
+app.use('/dashboard', require('./routes/dashboard'))
 
 const PORT = process.env.PORT || 4000
 
