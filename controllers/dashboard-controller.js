@@ -8,3 +8,10 @@ exports.getNotesType = (request, response) => {
         else response.send(result);
     })
 }
+exports.getLanguage = (request, response) => {
+    connection.query("select * from programming_language", 
+    (error, result) => {
+        if(error) response.send("error");
+        else response.send(result);
+    })
+}
