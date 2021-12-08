@@ -9,7 +9,7 @@ exports.userRegister = (request, response) => {
     connection.query(`INSERT INTO registered_users (user_name, user_password, submission_date) VALUES
     ("${user_name}", "${user_password}", "${submission_date}")`,
         (error, result) => {
-            if(error) response.send("error");
+            if(error) response.send(error);
             else response.send("success");
         });
 };
@@ -17,7 +17,7 @@ exports.userRegister = (request, response) => {
 exports.getUsers = (request, response) => {
     connection.query("select * from registered_users", 
     (error, result) => {
-        if(error) response.send("error");
+        if(error) response.send(error);
         else response.send(result);
     });
 };
