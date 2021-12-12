@@ -33,3 +33,11 @@ exports.getNotes = (request, response) => {
             else response.send(result);
         })
 }
+exports.deleteNote = (request, response) => {
+    const id = request.params.id;
+     connection.query(`delete from notes where note_id = "${id}"`,
+         (error, result) => {
+             if (error) response.send(error);
+             else response.send("success");
+         })
+ }
