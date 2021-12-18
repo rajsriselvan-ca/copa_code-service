@@ -41,3 +41,14 @@ exports.deleteNote = (request, response) => {
              else response.send("success");
          })
  }
+ exports.updateNotes = (request, response) => {
+    const data = request.body;
+    const incomingContent = JSON.stringify(data.content);
+    const id = JSON.parse(request.params.id)
+     connection.query(`update notes set note_title = "${data.note_title}", content = ${incomingContent},
+     note_type_id = "${data.note_type_id}", program_id = "${data.program_id}" where note_id = ${id}`,
+         (error, result) => {
+             if (error) response.send(error);
+             else response.send("success");
+         })
+ }
