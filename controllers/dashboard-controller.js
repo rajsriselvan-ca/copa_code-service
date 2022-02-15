@@ -3,11 +3,14 @@ const connection = config.connection;
 
 exports.createEmployee = (request, response) => {
     const data = request.body;
-    const incomingContent = JSON.stringify(data.content);
-    connection.query(`INSERT INTO notes (note_type_id, user_id, program_id, note_title, content, submission_date ) VALUES
-    ("${data.note_type_id}", "${data.user_id}", "${data.program_id}", "${data.note_title}", ${incomingContent}, "${data.submission_date}")`,
+    console.log("p--->>", data)
+    // const incomingContent = JSON.stringify(data.content);
+    connection.query(`INSERT INTO Employee ( First_Name, Last_Name, Email_ID,
+        Current_Address, Permanent_Address, Graduation_Date, Years_Of_Experience, SkillSet) VALUES
+    ("${data.firstName}", "${data.lastName}", "${data.emailID}", "${data.currentAddress}",
+    "${data.permanentAddress}", "${data.graduationDate}", "${data.yearsOfExperience}",  "${data.skillSet}")`,
         function (error, result) {
-            if (error) response.send(error);
+            if (error) console.log("err----", error);
             else response.send("success");
         })
 }
