@@ -1,13 +1,11 @@
 const express = require('express');
 router = express.Router();
 dashboard = require('../controllers/dashboard-controller');
+console.log("connminhgg---")
 
-router.get('/notes-type', dashboard.getNotesType);
-router.get('/get-program-language', dashboard.getLanguage);
-router.get('/get-notes', dashboard.getNotes);
-router.get('/get-all-notes', dashboard.getAllNotes)
-router.post('/create-notes', dashboard.createNotes);
-router.put('/update-note/:id/', dashboard.updateNotes)
-router.delete('/delete-note/:id/', dashboard.deleteNote);
+router.get('/get-employee-list', dashboard.getEmployeelist)
+router.post('/create-employee', dashboard.createEmployee);
+router.put('/update-employee/:id/', dashboard.updateEmployee)
+router.delete('/delete-employee/:id/', dashboard.deleteEmployee);
 
 module.exports = router;

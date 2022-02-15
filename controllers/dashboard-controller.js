@@ -1,21 +1,7 @@
 const config = require("../db_config");
 const connection = config.connection;
 
-exports.getNotesType = (request, response) => {
-    connection.query("select * from notes_type",
-        (error, result) => {
-            if (error) response.send(error);
-            else response.send(result);
-        })
-}
-exports.getLanguage = (request, response) => {
-    connection.query("select * from programming_language",
-        (error, result) => {
-            if (error) response.send(error);
-            else response.send(result);
-        })
-}
-exports.createNotes = (request, response) => {
+exports.createEmployee = (request, response) => {
     const data = request.body;
     const incomingContent = JSON.stringify(data.content);
     connection.query(`INSERT INTO notes (note_type_id, user_id, program_id, note_title, content, submission_date ) VALUES
@@ -25,15 +11,7 @@ exports.createNotes = (request, response) => {
             else response.send("success");
         })
 }
-exports.getNotes = (request, response) => {
-    const data = request.query;
-    connection.query(`select * from notes where user_id = "${data.user_id}" and note_type_id = "${data.selectedTab}"`,
-        (error, result) => {
-            if (error) response.send(error);
-            else response.send(result);
-        })
-}
-exports.getAllNotes = (request, response) => {
+exports.getEmployeelist = (request, response) => {
      const data = request.query;
      connection.query(`select * from notes where user_id = "${data.user_id}"`,
          (error, result) => {
@@ -41,7 +19,7 @@ exports.getAllNotes = (request, response) => {
              else response.send(result);
          })
  }
-exports.deleteNote = (request, response) => {
+exports.deleteEmployee = (request, response) => {
     const id = request.params.id;
      connection.query(`delete from notes where note_id = "${id}"`,
          (error, result) => {
@@ -49,7 +27,7 @@ exports.deleteNote = (request, response) => {
              else response.send("success");
          })
  }
- exports.updateNotes = (request, response) => {
+ exports.updateEmployee = (request, response) => {
     const data = request.body;
     const incomingContent = JSON.stringify(data.content);
     const id = JSON.parse(request.params.id)
