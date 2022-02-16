@@ -3,20 +3,18 @@ const connection = config.connection;
 
 exports.createEmployee = (request, response) => {
     const data = request.body;
-    console.log("p--->>", data)
-    // const incomingContent = JSON.stringify(data.content);
     connection.query(`INSERT INTO Employee ( First_Name, Last_Name, Email_ID,
         Current_Address, Permanent_Address, Graduation_Date, Years_Of_Experience, SkillSet) VALUES
     ("${data.firstName}", "${data.lastName}", "${data.emailID}", "${data.currentAddress}",
     "${data.permanentAddress}", "${data.graduationDate}", "${data.yearsOfExperience}",  "${data.skillSet}")`,
         function (error, result) {
-            if (error) console.log("err----", error);
+            if (error) response.send(error);
             else response.send("success");
         })
 }
 exports.getEmployeelist = (request, response) => {
      const data = request.query;
-     connection.query(`select * from notes where user_id = "${data.user_id}"`,
+     connection.query(`select * from employee`,
          (error, result) => {
              if (error) response.send(error);
              else response.send(result);
@@ -24,7 +22,7 @@ exports.getEmployeelist = (request, response) => {
  }
 exports.deleteEmployee = (request, response) => {
     const id = request.params.id;
-     connection.query(`delete from notes where note_id = "${id}"`,
+     connection.query(`delete from employee where Employee_ID = "${id}"`,
          (error, result) => {
              if (error) response.send(error);
              else response.send("success");
@@ -32,10 +30,9 @@ exports.deleteEmployee = (request, response) => {
  }
  exports.updateEmployee = (request, response) => {
     const data = request.body;
-    const incomingContent = JSON.stringify(data.content);
-    const id = JSON.parse(request.params.id)
-     connection.query(`update notes set note_title = "${data.note_title}", content = ${incomingContent}, user_id = "${data.user_id}",
-     note_type_id = "${data.note_type_id}", program_id = "${data.program_id}" where note_id = ${id}`,
+     connection.query(`update Employee set First_Name = "${data.First_Name}", Last_Name = "${data.Last_Name}", Email_ID = "${data.Email_ID}",
+     Current_Address = "${data.Current_Address}", Permanent_Address = "${data.Permanent_Address}",
+      Graduation_Date = "${data.Graduation_Date}", Years_Of_Experience="${data.Years_Of_Experience}", SkillSet = "${data.SkillSet}" where Employee_ID = ${data.Employee_ID}`,
          (error, result) => {
              if (error) response.send(error);
              else response.send("success");
