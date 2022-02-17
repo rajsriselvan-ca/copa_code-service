@@ -1,3 +1,4 @@
+const { send } = require("express/lib/response");
 const config = require("../db_config");
 const connection = config.connection;
 
@@ -13,12 +14,21 @@ exports.createEmployee = (request, response) => {
         })
 }
 exports.getEmployeelist = (request, response) => {
-     const data = request.query;
+    const pageNo = request.query.pageNumber;
+    const countLimit = 5;
+    const returnIndex = pageNo == 0 ? 0 : pageNo * countLimit;
+     connection.query(`select * from employee order by Employee_ID LIMIT ${countLimit} offset ${returnIndex}`,
+         (error, result) => {
+             if (error) response.send(error);
+             else response.send(result);
+         });
+ }
+ exports.getAllEmployeelist =  (request, response) => {
      connection.query(`select * from employee`,
          (error, result) => {
              if (error) response.send(error);
              else response.send(result);
-         })
+         });
  }
 exports.deleteEmployee = (request, response) => {
     const id = request.params.id;
