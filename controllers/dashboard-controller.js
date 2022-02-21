@@ -17,11 +17,19 @@ exports.getEmployeelist = (request, response) => {
     const pageNo = request.query.pageNumber;
     const countLimit = 5;
     const returnIndex = pageNo == 0 ? 0 : pageNo * countLimit;
-     connection.query(`select * from employee order by Employee_ID LIMIT ${countLimit} offset ${returnIndex}`,
-         (error, result) => {
-             if (error) response.send(error);
-             else response.send(result);
-         });
+    var sql1 = `select * from employee order by Employee_ID LIMIT ${countLimit} offset ${returnIndex}`;
+    var sql2 = 'select count(*) as cnt from employee';
+    connection.query(sql1, function(err, records){
+        if (err) throw err; 
+        connection.query(sql2, function(err, count) {
+            if (err) throw err;
+            const item = {
+                data:records, 
+                totalCount:count[0].cnt
+            }
+            response.send(item);
+        });  
+    });
  }
  exports.getAllEmployeelist =  (request, response) => {
      connection.query(`select * from employee`,
