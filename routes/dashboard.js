@@ -6,11 +6,11 @@ const { body, validationResult } = require('express-validator');
 router.get('/get-employee-list', dashboard.getEmployeelist)
 router.get('/get-all-employee-list',dashboard.getAllEmployeelist);
 router.post('/create-employee',
-body('firstName').isLength({ min: 3, max: 36 }),
-body('lastName').isLength({ min: 3, max: 36 }),
-body('emailID').isEmail().normalizeEmail(),
-body('skillSet').isLength({ min: 3, max: 30 }),
-body('yearsOfExperience').isInt({ min: 1, max: 10 }),
+body('firstName').exists({ checkFalsy: true }).isLength({ min: 3, max: 36 }).isAlpha('en-US', {ignore: ' '}),
+body('lastName').exists({ checkFalsy: true }).isLength({ min: 3, max: 36 }).isAlpha('en-US', {ignore: ' '}),
+body('emailID').exists({ checkFalsy: true }).isEmail().normalizeEmail(),
+body('skillSet').exists({ checkFalsy: true }).isLength({ min: 3, max: 30 }).isAlphanumeric('en-US', {ignore: ' '}),
+body('yearsOfExperience').exists({ checkFalsy: true }).isInt({ min: 1, max: 10 }),
 (request, response) => {
         const errors = validationResult(request);
         if (!errors.isEmpty()) {
