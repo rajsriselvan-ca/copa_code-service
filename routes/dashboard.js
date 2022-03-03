@@ -18,22 +18,15 @@ var upload = multer({
   storage: storage
 });
 
-
-
 router.get('/get-employee-list', dashboard.getEmployeelist)
 router.get('/get-all-employee-list',dashboard.getAllEmployeelist);
-router.post('/create-employee',upload.single('file'),(req, res) => {
-  const parseData = JSON.parse(req.body.formFields);
-  console.log("pp-----", parseData.firstName)
-  body('firstName').exists({ checkFalsy: true }).isLength({ min: 3, max: 36 }).isAlpha('en-US', {ignore: ' '})
-},
-// body('firstName').exists({ checkFalsy: true }).isLength({ min: 3, max: 36 }).isAlpha('en-US', {ignore: ' '}),
-// body('lastName').exists({ checkFalsy: true }).isLength({ min: 3, max: 36 }).isAlpha('en-US', {ignore: ' '}),
-// body('emailID').exists({ checkFalsy: true }).isEmail().normalizeEmail(),
-// body('skillSet').exists({ checkFalsy: true }).isLength({ min: 3, max: 30 }).isAlphanumeric('en-US', {ignore: ' '}),
-// body('yearsOfExperience').exists({ checkFalsy: true }).isInt({ min: 1, max: 10 }),
+router.post('/create-employee',upload.single('file'),
+body('firstName').exists({ checkFalsy: true }).isLength({ min: 3, max: 36 }).isAlpha('en-US', {ignore: ' '}),
+body('lastName').exists({ checkFalsy: true }).isLength({ min: 3, max: 36 }).isAlpha('en-US', {ignore: ' '}),
+body('emailID').exists({ checkFalsy: true }).isEmail().normalizeEmail(),
+body('skillSet').exists({ checkFalsy: true }).isLength({ min: 3, max: 30 }).isAlphanumeric('en-US', {ignore: ' '}),
+body('yearsOfExperience').exists({ checkFalsy: true }).isInt({ min: 1, max: 10 }),
 (request, response) => {
-  console.log("fields---->>", request.body)
         const errors = validationResult(request);
         if (!errors.isEmpty()) {
             return response.send(errors);

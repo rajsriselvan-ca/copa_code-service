@@ -4,10 +4,11 @@ const connection = config.connection;
 
 exports.createEmployee = (request, response) => {
     const data = request.body;
+    const filePath = request.file ? request.file.path : "";
     connection.query(`INSERT INTO Employee ( First_Name, Last_Name, Email_ID,
-        Current_Address, Permanent_Address, Graduation_Date, Years_Of_Experience, SkillSet) VALUES
+        Current_Address, Permanent_Address, Graduation_Date, Years_Of_Experience, SkillSet, ImageURL) VALUES
     ("${data.firstName}", "${data.lastName}", "${data.emailID}", "${data.currentAddress}",
-    "${data.permanentAddress}", "${data.graduationDate}", "${data.yearsOfExperience}",  "${data.skillSet}")`,
+    "${data.permanentAddress}", "${data.graduationDate}", "${data.yearsOfExperience}",  "${data.skillSet}", "${filePath}")`,
         function (error, result) {
             if (error) response.send(error);
             else response.send("success");
