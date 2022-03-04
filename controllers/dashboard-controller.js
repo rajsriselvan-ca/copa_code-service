@@ -16,8 +16,8 @@ exports.createEmployee = (request, response) => {
 }
 exports.getEmployeelist = (request, response) => {
     const pageNo = request.query.pageNumber;
-    const countLimit = 5;
-    const returnIndex = pageNo == 0 ? 0 : pageNo * countLimit;
+    const countLimit = request.query.countToDisplay;
+    const returnIndex = pageNo == 0 ? 0 : (pageNo-1) * countLimit;
     var sql1 = `select * from employee order by Employee_ID LIMIT ${countLimit} offset ${returnIndex}`;
     var sql2 = 'select count(*) as cnt from employee';
     connection.query(sql1, function (err, records) {
