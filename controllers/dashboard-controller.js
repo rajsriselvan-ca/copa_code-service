@@ -1,6 +1,24 @@
 const { send } = require("express/lib/response");
 const config = require("../db_config");
+const sgMail = require("@sendgrid/mail");
+const { response } = require("express");
 const connection = config.connection;
+
+ function handleEmail () {
+    sgMail.setApiKey(process.env.SENDGRID_KEY);
+    const message = {
+        to: "rajsriselvan.ca@gmail.com",
+        from: {
+            name : "SZIGONY Test Email",
+            email : "rajsriselvam1994@gmail.com"
+        },
+        subject: "Test Email",
+        html: "<h1>Hello Test Email !!</h1>"
+    }
+    sgMail.send(message).then((response) => {
+        console.log(":success--", )
+    }).catch((error) => console.log("failed---", error))
+}
 
 exports.createEmployee = (request, response) => {
     const data = request.body;
@@ -14,7 +32,9 @@ exports.createEmployee = (request, response) => {
             else response.send("success");
         });
 }
+
 exports.getEmployeelist = (request, response) => {
+    handleEmail();
     const pageNo = request.query.pageNumber;
     const countLimit = request.query.countToDisplay;
     const returnIndex = pageNo == 0 ? 0 : (pageNo-1) * countLimit;
