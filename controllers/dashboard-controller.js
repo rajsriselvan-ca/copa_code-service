@@ -26,7 +26,9 @@ const connection = config.connection;
 function handleCaptcha () {
     let captcha = new Captcha();
     console.log(captcha.value);
-    captcha.PNGStream.pipe(fs.createWriteStream(path.join(__dirname, `${captcha.value}.png`)));
+    const captchaFile = captcha.PNGStream.pipe(fs.createWriteStream(path.join("public/", `${captcha.value}.png`)));
+    const CaptchaURL = process.env.BASEURL+captchaFile.path;
+    console.log("frr----",CaptchaURL )
 
 }
 
@@ -45,7 +47,7 @@ exports.createEmployee = (request, response) => {
 
 exports.getEmployeelist = (request, response) => {
     // handleEmail();
-    // handleCaptcha();
+    handleCaptcha();
     const pageNo = request.query.pageNumber;
     const countLimit = request.query.countToDisplay;
     const returnIndex = pageNo == 0 ? 0 : (pageNo-1) * countLimit;
