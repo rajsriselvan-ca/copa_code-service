@@ -1,6 +1,9 @@
 const { send } = require("express/lib/response");
 const config = require("../db_config");
 const sgMail = require("@sendgrid/mail");
+const path = require("path"),
+	fs = require("fs"),
+	Captcha = require("captcha-generator-alphanumeric").default;
 const { response } = require("express");
 const connection = config.connection;
 
@@ -20,6 +23,13 @@ const connection = config.connection;
     }).catch((error) => console.log("failed---", error))
 }
 
+function handleCaptcha () {
+    let captcha = new Captcha();
+    console.log(captcha.value);
+    captcha.PNGStream.pipe(fs.createWriteStream(path.join(__dirname, `${captcha.value}.png`)));
+
+}
+
 exports.createEmployee = (request, response) => {
     const data = request.body;
     const filePath = request.file ? request.file.path : "";
@@ -34,7 +44,8 @@ exports.createEmployee = (request, response) => {
 }
 
 exports.getEmployeelist = (request, response) => {
-    handleEmail();
+    // handleEmail();
+    // handleCaptcha();
     const pageNo = request.query.pageNumber;
     const countLimit = request.query.countToDisplay;
     const returnIndex = pageNo == 0 ? 0 : (pageNo-1) * countLimit;
