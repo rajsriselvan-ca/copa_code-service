@@ -7,19 +7,36 @@ const path = require("path"),
 const { response } = require("express");
 const connection = config.connection;
 
- function handleEmail () {
+   function base64_encode(file){
+    let bitmap = fs.readFileSync(file); // issue when dynamic file path passed
+    return  new Buffer(bitmap).toString('base64');
+  }
+
+
+ function handleEmail (params) {
+     const {filepath, fileURL} = params; // dynamic values are coming here
+     const originalPath = filepath.replace(/\\/g, "/");
     sgMail.setApiKey(process.env.SENDGRID_KEY);
+    let data_base64 =  base64_encode(`./public/94FYZ6.png`) // issue is here, when i set originalPath. But if it is static it is working
     const message = {
-        to: "rajsriselvan.ca@gmail.com",
+        to: "ramvijaya96@gmail.com",
         from: {
             name : "SZIGONY Test Email",
-            email : "rajsriselvam1994@gmail.com"
+            email : "ramvijaya96@gmail.com"
         },
         subject: "Test Email",
-        html: "<h1>Hello Test Email !!</h1>"
+        html: `<img src="cid:94FYZ6" />`,
+        attachments: [
+            {
+                filename: "94FYZ6.png", // these all need to pass dynamic
+                contentType: "image/png",
+                content: data_base64,
+                cid: "94FYZ6"
+            }
+        ]
     }
     sgMail.send(message).then((response) => {
-        console.log(":success--", )
+        console.log(":success--Email", )
     }).catch((error) => console.log("failed---", error))
 }
 
@@ -28,8 +45,11 @@ function handleCaptcha () {
     console.log(captcha.value);
     const captchaFile = captcha.PNGStream.pipe(fs.createWriteStream(path.join("public/", `${captcha.value}.png`)));
     const CaptchaURL = process.env.BASEURL+captchaFile.path;
-    console.log("frr----",CaptchaURL )
-
+    const params = {
+        filepath: captchaFile.path,
+        fileURL: CaptchaURL
+    }
+    handleEmail(params);
 }
 
 exports.createEmployee = (request, response) => {
@@ -46,7 +66,6 @@ exports.createEmployee = (request, response) => {
 }
 
 exports.getEmployeelist = (request, response) => {
-    // handleEmail();
     handleCaptcha();
     const pageNo = request.query.pageNumber;
     const countLimit = request.query.countToDisplay;
