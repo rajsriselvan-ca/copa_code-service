@@ -7,49 +7,52 @@ const path = require("path"),
 const { response } = require("express");
 const connection = config.connection;
 
-   function base64_encode(file){
-    let bitmap = fs.readFileSync(file); // issue when dynamic file path passed
-    return  new Buffer(bitmap).toString('base64');
-  }
+async function handleEmail (params) {
+    const {filepath, fileURL} = params; 
+    const originalPath = `./${filepath.replace(/\\/g, "/")}`;
+    const fileName =  originalPath.split('/')[2];
 
-
- function handleEmail (params) {
-     const {filepath, fileURL} = params; // dynamic values are coming here
-     const originalPath = filepath.replace(/\\/g, "/");
-    sgMail.setApiKey(process.env.SENDGRID_KEY);
-    let data_base64 =  base64_encode(`./public/94FYZ6.png`) // issue is here, when i set originalPath. But if it is static it is working
-    const message = {
-        to: "ramvijaya96@gmail.com",
-        from: {
-            name : "SZIGONY Test Email",
-            email : "ramvijaya96@gmail.com"
-        },
-        subject: "Test Email",
-        html: `<img src="cid:94FYZ6" />`,
-        attachments: [
-            {
-                filename: "94FYZ6.png", // these all need to pass dynamic
-                contentType: "image/png",
-                content: data_base64,
-                cid: "94FYZ6"
-            }
-        ]
-    }
-    sgMail.send(message).then((response) => {
-        console.log(":success--Email", )
-    }).catch((error) => console.log("failed---", error))
+   sgMail.setApiKey(process.env.SENDGRID_KEY);
+     fs.readFile((originalPath), async (err, data) => {
+   const pathToAttachment = originalPath;
+   const attachment = await fs.readFileSync(pathToAttachment);
+   const attachmentContent = await attachment.toString("base64");
+       if (err) {
+         console.log("file error---", err)
+       }
+       if (data) {
+         const msg = {
+           to: 'rajsriselvan.ca@gmail.com',
+           from: 'ramvijaya96@gmail.com',
+           subject: 'User Verification CAPTCHA',
+           html: `<p1>Please find the Captcha attached to this Email</p1>`,
+           attachments: [
+             {
+               content: attachmentContent,
+               filename: fileName,
+               contentType: "image/jpeg",
+               disposition: 'attachment',
+             },
+           ],
+         };
+        await sgMail.send(msg).then((response) => {
+           console.log(":success--Email", )
+       }).catch((error) => console.log("failed---", error))
+       }
+     });
+   
 }
 
-function handleCaptcha () {
-    let captcha = new Captcha();
-    console.log(captcha.value);
-    const captchaFile = captcha.PNGStream.pipe(fs.createWriteStream(path.join("public/", `${captcha.value}.png`)));
-    const CaptchaURL = process.env.BASEURL+captchaFile.path;
-    const params = {
-        filepath: captchaFile.path,
-        fileURL: CaptchaURL
-    }
-    handleEmail(params);
+async function handleCaptcha () {
+   let captcha = new Captcha();
+   const pathCaptcha = await fs.createWriteStream(path.join("public/", `${captcha.value}.jpeg`))
+   const captchaFile = await captcha.JPEGStream.pipe(pathCaptcha);
+   const CaptchaURL = process.env.BASEURL+captchaFile.path;
+   const params = {
+       filepath: captchaFile.path,
+       fileURL: CaptchaURL,
+   }
+  handleEmail(params)
 }
 
 exports.createEmployee = (request, response) => {
