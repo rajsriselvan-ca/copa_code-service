@@ -13,7 +13,7 @@ async function handleEmail (params) {
     const fileName =  originalPath.split('/')[2];
 
    sgMail.setApiKey(process.env.SENDGRID_KEY);
-     fs.readFile((originalPath), async (err, data) => {
+     await fs.readFile((originalPath), async (err, data) => {
    const pathToAttachment = originalPath;
    const attachment = await fs.readFileSync(pathToAttachment);
    const attachmentContent = await attachment.toString("base64");
