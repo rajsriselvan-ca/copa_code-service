@@ -13,33 +13,35 @@ async function handleEmail (params) {
     const fileName =  originalPath.split('/')[2];
 
    sgMail.setApiKey(process.env.SENDGRID_KEY);
-     await fs.readFile((originalPath), async (err, data) => {
-   const pathToAttachment = originalPath;
-   const attachment = await fs.readFileSync(pathToAttachment);
-   const attachmentContent = await attachment.toString("base64");
-       if (err) {
-         console.log("file error---", err)
-       }
-       if (data) {
-         const msg = {
-           to: 'rajsriselvan.ca@gmail.com',
-           from: 'ramvijaya96@gmail.com',
-           subject: 'User Verification CAPTCHA',
-           html: `<p1>Please find the Captcha attached to this Email</p1>`,
-           attachments: [
-             {
-               content: attachmentContent,
-               filename: fileName,
-               contentType: "image/jpeg",
-               disposition: 'attachment',
-             },
-           ],
-         };
-        await sgMail.send(msg).then((response) => {
-           console.log(":success--Email", )
-       }).catch((error) => console.log("failed---", error))
-       }
-     });
+   setTimeout(async () => {
+    await fs.readFile((originalPath), async (err, data) => {
+        const pathToAttachment = originalPath;
+        const attachment = await fs.readFileSync(pathToAttachment);
+        const attachmentContent = await attachment.toString("base64");
+            if (err) {
+              console.log("file error---", err)
+            }
+            if (data) {
+              const msg = {
+                to: 'rajsriselvan.ca@gmail.com',
+                from: 'ramvijaya96@gmail.com',
+                subject: 'User Verification CAPTCHA',
+                html: `<p1>Please find the Captcha attached to this Email</p1>`,
+                attachments: [
+                  {
+                    content: attachmentContent,
+                    filename: fileName,
+                    contentType: "image/jpeg",
+                    disposition: 'attachment',
+                  },
+                ],
+              };
+             await sgMail.send(msg).then((response) => {
+                console.log(":success--Email", )
+            }).catch((error) => console.log("failed---", error))
+            }
+          });
+})
    
 }
 
