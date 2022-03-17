@@ -31,8 +31,11 @@ body('yearsOfExperience').exists({ checkFalsy: true }).isInt({ min: 1, max: 10 }
         if (!errors.isEmpty()) {
             return response.send(errors);
           }
-          dashboard.createEmployee(request, response);
+          dashboard.storeEmployee(request, response);
 });
+router.post('/save-employee', function(request, response) {
+  dashboard.saveEmployee(request, response)
+})
 router.put('/update-employee/:id/', dashboard.updateEmployee)
 router.delete('/delete-employee/:id/', dashboard.deleteEmployee);
 

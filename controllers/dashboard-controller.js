@@ -1,80 +1,96 @@
 const { send } = require("express/lib/response");
 const config = require("../db_config");
 const sgMail = require("@sendgrid/mail");
+var localStorage = require('local-storage');
 const path = require("path"),
-	fs = require("fs"),
-	Captcha = require("captcha-generator-alphanumeric").default;
+    fs = require("fs"),
+    Captcha = require("captcha-generator-alphanumeric").default;
 const { response } = require("express");
 const connection = config.connection;
 
-async function handleEmail (params) {
-    const {filepath, fileURL} = params; 
+async function handleEmail(params) {
+    const { filepath, fileURL, emailID } = params;
     const originalPath = `./${filepath.replace(/\\/g, "/")}`;
-    const fileName =  originalPath.split('/')[2];
+    const fileName = originalPath.split('/')[2];
 
-   sgMail.setApiKey(process.env.SENDGRID_KEY);
-   setTimeout(async () => {
-    await fs.readFile((originalPath), async (err, data) => {
-        const pathToAttachment = originalPath;
-        const attachment = await fs.readFileSync(pathToAttachment);
-        const attachmentContent = await attachment.toString("base64");
+    sgMail.setApiKey(process.env.SENDGRID_KEY);
+    setTimeout(async () => {
+        await fs.readFile((originalPath), async (err, data) => {
+            const pathToAttachment = originalPath;
+            const attachment = await fs.readFileSync(pathToAttachment);
+            const attachmentContent = await attachment.toString("base64");
             if (err) {
-              console.log("file error---", err)
+                console.log("file error---", err)
             }
             if (data) {
-              const msg = {
-                to: 'rajsriselvan.ca@gmail.com',
-                from: 'ramvijaya96@gmail.com',
-                subject: 'User Verification CAPTCHA',
-                html: `<p1>Please find the Captcha attached to this Email</p1>`,
-                attachments: [
-                  {
-                    content: attachmentContent,
-                    filename: fileName,
-                    contentType: "image/jpeg",
-                    disposition: 'attachment',
-                  },
-                ],
-              };
-             await sgMail.send(msg).then((response) => {
-                console.log(":success--Email", )
-            }).catch((error) => console.log("failed---", error))
+                const msg = {
+                    to: emailID,
+                    from: 'ramvijaya96@gmail.com',
+                    subject: 'User Verification CAPTCHA',
+                    html: `<p1>Please find the Captcha attached to this Email</p1>`,
+                    attachments: [
+                        {
+                            content: attachmentContent,
+                            filename: fileName,
+                            contentType: "image/jpeg",
+                            disposition: 'attachment',
+                        },
+                    ],
+                };
+                await sgMail.send(msg).then((response) => {
+                    console.log(":success--Email",)
+                }).catch((error) => console.log("failed---", error))
             }
-          });
-})
+        });
+    })
+
+}
+
+exports.saveEmployee = (request, response) => {
+    const formData = localStorage.get('formData')
+    const path = localStorage.get('filePath')
+    connection.query(`INSERT INTO Employee ( First_Name, Last_Name, Email_ID,
+        Current_Address, Permanent_Address, Graduation_Date, Years_Of_Experience, SkillSet, ImageURL) VALUES
+    ("${formData.firstName}", "${formData.lastName}", "${formData.emailID}", "${formData.currentAddress}",
+    "${formData.permanentAddress}", "${formData.graduationDate}", "${formData.yearsOfExperience}",  "${formData.skillSet}", "${path}")`,
+        function (error, result) {
+            if (error) response.send(error);
+            else {
+                response.send("success");
+                localStorage.clear();
+            } 
+        });
    
 }
 
-async function handleCaptcha () {
-   let captcha = new Captcha();
-   const pathCaptcha = await fs.createWriteStream(path.join("public/", `${captcha.value}.jpeg`))
-   const captchaFile = await captcha.JPEGStream.pipe(pathCaptcha);
-   const CaptchaURL = process.env.BASEURL+captchaFile.path;
-   const params = {
-       filepath: captchaFile.path,
-       fileURL: CaptchaURL,
-   }
-  handleEmail(params)
-}
-
-exports.createEmployee = (request, response) => {
+exports.storeEmployee = async (request, response) => {
     const data = request.body;
+    const emailID = request.body.emailID;
     const filePath = request.file ? request.file.path : "";
-    connection.query(`INSERT INTO Employee ( First_Name, Last_Name, Email_ID,
-        Current_Address, Permanent_Address, Graduation_Date, Years_Of_Experience, SkillSet, ImageURL) VALUES
-    ("${data.firstName}", "${data.lastName}", "${data.emailID}", "${data.currentAddress}",
-    "${data.permanentAddress}", "${data.graduationDate}", "${data.yearsOfExperience}",  "${data.skillSet}", "${filePath}")`,
-        function (error, result) {
-            if (error) response.send(error);
-            else response.send("success");
-        });
+    let captcha = new Captcha();
+    localStorage.set('formData', data)
+    localStorage.set('filePath', filePath)
+    localStorage.set('captchaValue', captcha.value)
+    const pathCaptcha = await fs.createWriteStream(path.join("public/", `${captcha.value}.jpeg`))
+    const captchaFile = await captcha.JPEGStream.pipe(pathCaptcha);
+    const CaptchaURL = process.env.BASEURL + captchaFile.path;
+    const params = {
+        filepath: captchaFile.path,
+        fileURL: CaptchaURL,
+        emailID: emailID
+    }
+    handleEmail(params)
+    const payload = {
+        status: 'success',
+        captcha: captcha.value,
+    }
+    response.send(payload);
 }
 
 exports.getEmployeelist = (request, response) => {
-    handleCaptcha();
     const pageNo = request.query.pageNumber;
     const countLimit = request.query.countToDisplay;
-    const returnIndex = pageNo == 0 ? 0 : (pageNo-1) * countLimit;
+    const returnIndex = pageNo == 0 ? 0 : (pageNo - 1) * countLimit;
     var sql1 = `select * from employee order by Employee_ID LIMIT ${countLimit} offset ${returnIndex}`;
     var sql2 = 'select count(*) as cnt from employee';
     connection.query(sql1, function (err, records) {
