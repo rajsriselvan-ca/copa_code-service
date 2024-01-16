@@ -1,5 +1,6 @@
 const config = require("../db_config");
 const connection =  config.connection;
+const jwt = require('jsonwebtoken');
 
 exports.userRegister = (request, response) => {
     const user_name = request.body.username;
@@ -33,8 +34,10 @@ exports.loginUserDetailsPost = (request, response) => {
     (error, userList) => {
         if(error) response.send(error);
         else {
+            const user = { name: user_name};
             if(userList.length){
-                response.send(userList[0]);
+                const jwtToken = jwt.sign(user, process.env.JWT_ACCESS_TOKEN);
+                response.json({token: jwtToken, userDetails: userList[0]});
             } else {
                 response.send("User Not Exist");    
             }
