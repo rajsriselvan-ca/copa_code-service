@@ -7,7 +7,6 @@ exports.userRegister = (request, response) => {
     const user_password = request.body.password;
     const submission_date = request.body.submission_date;
 
-
     connection.query("select * from registered_users",
     (error, registeredUsers) => {
         if(error) response.send(error);
@@ -30,13 +29,13 @@ exports.userRegister = (request, response) => {
 exports.loginUserDetailsPost = (request, response) => {
     const user_name = request.body.username;
     const user_password = request.body.password;
-    connection.query(`select * from registered_users where user_name = "${user_name}" AND user_password = "${user_password}"`,
+    connection.query(`select user_id, user_name, submission_date from registered_users where user_name = "${user_name}" AND user_password = "${user_password}"`,
     (error, userList) => {
         if(error) response.send(error);
         else {
             const user = { name: user_name};
             if(userList.length){
-                const jwtToken = jwt.sign(user, process.env.JWT_ACCESS_TOKEN);
+                const jwtToken = jwt.sign(user, process.env.JWT_ACCESS_KEY, { expiresIn: '10m'});
                 response.json({token: jwtToken, userDetails: userList[0]});
             } else {
                 response.send("User Not Exist");    
