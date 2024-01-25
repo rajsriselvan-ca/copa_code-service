@@ -1,0 +1,1 @@
+To Start a service - "nmp run dev"
