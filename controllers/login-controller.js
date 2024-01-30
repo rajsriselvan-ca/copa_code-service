@@ -2,14 +2,26 @@ const config = require("../db_config");
 const connection =  config.connection;
 const jwt = require('jsonwebtoken');
 
-const { Client } = require("pg");
+//const { Client } = require("pg");
+//const client = new Client(process.env.DATABASE_URL);
 
-const client = new Client(process.env.DATABASE_URL);
+// (async () => {
+//   await client.connect();
+//   try {
+//     const results = await client.query("SELECT NOW()");
+//     console.log(results);
+//   } catch (err) {
+//     console.error("error executing query:", err);
+//   } finally {
+//     client.end();
+//   }
+// })();
+//const client = new Client(process.env.DATABASE_URL);
+console.log("check line ---");
+  //client.connect();
 
-client.connect();
-
-// client.query(`INSERT INTO  (language_id, language_name ) VALUES
-// ('8','Other')`,
+// client.query(`INSERT INTO registered_users (user_name, user_password ) VALUES
+// ('test@gmail.com','1111')`,
 //  (error, result) => {
 //     if (error) {
 //       console.error('Error executing query', error);
@@ -17,21 +29,20 @@ client.connect();
 //       console.log('Result:', result);
 //     }}) 
 
-client.query("select * from programming_language", (error, result) => {
-  if (error) {
-    console.error('Error executing query', error);
-  } else {
-    console.log('Result:', result.rows);
-  }
-  
-});
+// client.query("select * from programming_language", (error, result) => {
+//   if (error) {
+//     console.error('Error executing query', error);
+//   } else {
+//     console.log('Result:', result.rows);
+//   }
+// });
 
 exports.userRegister = (request, response) => {
     const user_name = request.body.username;
     const user_password = request.body.password;
     const submission_date = request.body.submission_date;
 
-    client.query("select * from registered_users",
+    connection.query("select * from registered_users",
     (error, registeredUsers) => {
         if(error) response.send(error);
         else {
@@ -53,7 +64,7 @@ exports.userRegister = (request, response) => {
 exports.loginUserDetailsPost = (request, response) => {
     const user_name = request.body.username;
     const user_password = request.body.password;
-    client.query(`select user_id, user_name, submission_date from registered_users where user_name = "${user_name}" AND user_password = "${user_password}"`,
+    connection.query(`select user_id, user_name, submission_date from registered_users where user_name = "${user_name}" AND user_password = "${user_password}"`,
     (error, userList) => {
         if(error) response.send(error);
         else {
@@ -66,5 +77,4 @@ exports.loginUserDetailsPost = (request, response) => {
             }
         }
     });
-    client.end();
 };
