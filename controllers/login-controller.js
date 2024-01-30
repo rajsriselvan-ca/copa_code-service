@@ -22,7 +22,7 @@ exports.userRegister = (request, response) => {
             const UserExist = registeredUsers.rows.find(record => record.user_name.toLowerCase() === user_name.toLowerCase()) === undefined ? false : true;
             if(!UserExist) {
                 client.query(`INSERT INTO registered_users (user_name, user_password, submission_date) VALUES
-                ("${user_name}", "${user_password}", "${submission_date}")`,
+                ('${user_name}', '${user_password}', '${submission_date}')`,
                     (error, result) => {
                         if(error) response.send(error);
                         else response.send("success");
