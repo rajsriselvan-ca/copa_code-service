@@ -1,6 +1,12 @@
 const config = require("../db_config");
 const connection = config.connection;
 
+const { Client } = require("pg");
+
+const client = new Client(process.env.DATABASE_URL);
+
+client.connect();
+
 // const client = new Client(process.env.DATABASE_URL);
 
 // client.query(`INSERT INTO notes (note_type_id, user_id, program_id, note_title, content, submission_date ) VALUES
@@ -12,26 +18,15 @@ const connection = config.connection;
 //       console.log('Result:', result.rows);
 //     }})
 
-exports.createNotes = (request, response) => {
-    const data = request.body;
-    const incomingContent = JSON.stringify(data.content);
-    connection.query(`INSERT INTO notes (note_type_id, user_id, program_id, note_title, content, submission_date ) VALUES
-    ("${data.note_type_id}", "${data.user_id}", "${data.program_id}", "${data.note_title}", ${incomingContent}, "${data.submission_date}")`,
-        function (error, result) {
-            if (error) response.send(error);
-            else response.send("success");
-        })
-}
-
 exports.getNotesType = (request, response) => {
-    connection.query("select * from notes_type",
+    client.query("select * from notes_type",
         (error, result) => {
             if (error) response.send(error);
             else response.send(result.rows);
         })
 }
 exports.getLanguage = (request, response) => {
-    connection.query("select * from programming_language",
+    client.query("select * from programming_language",
         (error, result) => {
             if (error) response.send(error);
             else response.send(result.rows);
@@ -39,9 +34,9 @@ exports.getLanguage = (request, response) => {
 }
 exports.createNotes = (request, response) => {
     const data = request.body;
-    const incomingContent = JSON.stringify(data.content);
-    connection.query(`INSERT INTO notes (note_type_id, user_id, program_id, note_title, content, submission_date ) VALUES
-    ("${data.note_type_id}", "${data.user_id}", "${data.program_id}", "${data.note_title}", ${incomingContent}, "${data.submission_date}")`,
+    const incomingContent = data.content;
+    client.query(`INSERT INTO notes (note_type_id, user_id, program_id, note_title, content, submission_date ) VALUES
+    ('${data.note_type_id}', '${data.user_id}', '${data.program_id}', '${data.note_title}', '${incomingContent}', '${data.submission_date}')`,
         function (error, result) {
             if (error) response.send(error);
             else response.send("success");
@@ -49,7 +44,7 @@ exports.createNotes = (request, response) => {
 }
 exports.getNotes = (request, response) => {
     const data = request.query;
-    connection.query(`select * from notes where user_id = "${data.user_id}" and note_type_id = "${data.selectedTab}"`,
+    client.query(`select * from notes where user_id = '${data.user_id}' and note_type_id = '${data.selectedTab}'`,
         (error, result) => {
             if (error) response.send(error);
             else response.send(result.rows);
@@ -57,7 +52,7 @@ exports.getNotes = (request, response) => {
 }
 exports.getAllNotes = (request, response) => {
      const data = request.query;
-     connection.query(`select * from notes where user_id = "${data.user_id}"`,
+     client.query(`select * from notes where user_id = '${data.user_id}'`,
          (error, result) => {
              if (error) response.send(error);
              else response.send(result.rows);
@@ -65,7 +60,7 @@ exports.getAllNotes = (request, response) => {
  }
 exports.deleteNote = (request, response) => {
     const id = request.params.id;
-    connection.query(`delete from notes where note_id = "${id}"`,
+    client.query(`delete from notes where note_id = '${id}'`,
          (error, result) => {
              if (error) response.send(error);
              else response.send("success");
@@ -73,10 +68,10 @@ exports.deleteNote = (request, response) => {
  }
  exports.updateNotes = (request, response) => {
     const data = request.body;
-    const incomingContent = JSON.stringify(data.content);
+    const incomingContent = data.content;
     const id = JSON.parse(request.params.id)
-    connection.query(`update notes set note_title = "${data.note_title}", content = ${incomingContent}, user_id = "${data.user_id}",
-     note_type_id = "${data.note_type_id}", program_id = "${data.program_id}" where note_id = ${id}`,
+    client.query(`update notes set note_title = '${data.note_title}', content = '${incomingContent}', user_id = '${data.user_id}',
+     note_type_id = '${data.note_type_id}', program_id = '${data.program_id}' where note_id = '${id}'`,
          (error, result) => {
              if (error) response.send(error);
              else response.send("success");
