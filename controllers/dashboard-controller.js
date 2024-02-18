@@ -35,9 +35,9 @@ exports.getLanguage = (request, response) => {
 exports.createNotes = (request, response) => {
     const data = request.body;
     const incomingContent = data.content;
-    const query = `INSERT INTO notes (note_type_id, user_id, program_id, note_title, content, submission_date ) VALUES (?, ?, ?, ?, ?, ?)`;
+    const query = `INSERT INTO notes (note_type_id, user_id, program_id, note_title, content, submission_date ) VALUES ($1, $2, $3, $4, $5, $6)`;
     const values = [data.note_type_id, data.user_id, data.program_id, data.note_title, incomingContent, data.submission_date];
-    connection.query(query, values, function (error, result) {
+    client.query(query, values, function (error, result) {
         if (error) {
             response.status(500).send(error);
         } else {
