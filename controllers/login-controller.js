@@ -20,7 +20,7 @@ exports.userRegister = (request, response) => {
         } else {
             const userExists = registeredUsers.length > 0;
             if(!userExists) {
-                const query = "INSERT INTO registered_users (user_name, user_password, submission_date) VALUES ($1, $2, $3)";
+                const query = `INSERT INTO registered_users (user_name, user_password, submission_date) VALUES ($1, $2, $3)`;
                 const values = [user_name, user_password, submission_date];
                 connection.query(query, values, (error, result) => {
                     if(error) {
@@ -41,7 +41,7 @@ exports.loginUserDetailsPost = (request, response) => {
     const user_password = request.body.password;
 
     client.query(
-        "SELECT user_id, user_name, submission_date FROM registered_users WHERE user_name = $1 AND user_password = $2",
+        `SELECT user_id, user_name, submission_date FROM registered_users WHERE user_name = $1 AND user_password = $2`,
         [user_name, user_password],
         (error, userList) => {
             if (error) {
