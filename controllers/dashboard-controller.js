@@ -73,10 +73,13 @@ exports.deleteNote = (request, response) => {
     const data = request.body;
     const incomingContent = data.content;
     const id = JSON.parse(request.params.id)
-    client.query(`update notes set note_title = '${data.note_title}', content = '${incomingContent}', user_id = '${data.user_id}',
-     note_type_id = '${data.note_type_id}', program_id = '${data.program_id}' where note_id = '${id}'`,
-         (error, result) => {
-             if (error) response.send(error);
-             else response.send("success");
-         })
+    const query = `update notes set note_title = $1, content = $2, user_id = $3, note_type_id = $4, program_id = $5 where note_id = $6`;
+    const values = [data.note_title, incomingContent, data.user_id, data.note_type_id, data.program_id, id]
+    client.query(query, values, function (error, result) {
+        if (error) {
+            response.status(500).send(error);
+        } else {
+            response.status(200).send("success");
+        }
+    });
  }
