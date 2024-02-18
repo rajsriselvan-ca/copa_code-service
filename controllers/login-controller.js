@@ -22,7 +22,7 @@ exports.userRegister = (request, response) => {
             if(!userExists) {
                 const query = `INSERT INTO registered_users (user_name, user_password, submission_date) VALUES ($1, $2, $3)`;
                 const values = [user_name, user_password, submission_date];
-                connection.query(query, values, (error, result) => {
+                client.query(query, values, (error, result) => {
                     if(error) {
                         response.status(500).send(error);
                     } else {
