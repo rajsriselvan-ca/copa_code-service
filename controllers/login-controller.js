@@ -16,7 +16,7 @@ exports.userRegister = (request, response) => {
     client.query("SELECT * FROM registered_users WHERE LOWER(user_name) = LOWER($1)", [user_name],
     (error, registeredUsers) => {
         if(error) {
-            response.status(500).send(error);
+            response.send(error);
         } else {
             const userExists = registeredUsers.length > 0;
             if(!userExists) {
@@ -24,13 +24,13 @@ exports.userRegister = (request, response) => {
                 const values = [user_name, user_password, submission_date];
                 client.query(query, values, (error, result) => {
                     if(error) {
-                        response.status(500).send(error);
+                        response.send(error);
                     } else {
-                        response.status(200).send("success");
+                        response.send("success");
                     }
                 });
             } else {
-                response.status(400).send("User already exists");
+                response.send("User already exists");
             }
         }
     });
@@ -45,14 +45,14 @@ exports.loginUserDetailsPost = (request, response) => {
         [user_name, user_password],
         (error, userList) => {
             if (error) {
-                response.status(500).send(error);
+                response.send(error);
             } else {
                 const user = { name: user_name };
                 if (userList.length) {
                     const jwtToken = jwt.sign(user, process.env.JWT_ACCESS_KEY, { expiresIn: '90m' });
                     response.json({ token: jwtToken, userDetails: userList[0] });
                 } else {
-                    response.status(400).send("User Not Exist");
+                    response.send("User Not Exist");
                 }
             }
         }

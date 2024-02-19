@@ -39,9 +39,9 @@ exports.createNotes = (request, response) => {
     const values = [data.note_type_id, data.user_id, data.program_id, data.note_title, incomingContent, data.submission_date];
     client.query(query, values, function (error, result) {
         if (error) {
-            response.status(500).send(error);
+            response.send(error);
         } else {
-            response.status(200).send("success");
+            response.send("success");
         }
     });
 }
@@ -77,9 +77,9 @@ exports.deleteNote = (request, response) => {
     const values = [data.note_title, incomingContent, data.user_id, data.note_type_id, data.program_id, id]
     client.query(query, values, function (error, result) {
         if (error) {
-            response.status(500).send(error);
+            response.send(error);
         } else {
-            response.status(200).send("success");
+            response.send("success");
         }
     });
  }
