@@ -48,7 +48,7 @@ exports.loginUserDetailsPost = (request, response) => {
                 response.send(error);
             } else {
                 const user = { name: user_name };
-                if (userList.length) {
+                if (userList.rows.length) {
                     const jwtToken = jwt.sign(user, process.env.JWT_ACCESS_KEY, { expiresIn: '90m' });
                     response.json({ token: jwtToken, userDetails: userList[0] });
                 } else {
