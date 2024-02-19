@@ -30,7 +30,7 @@ exports.userRegister = (request, response) => {
                     }
                 });
             } else {
-                response.send("User already exists");
+                response.send("error");
             }
         }
     });
