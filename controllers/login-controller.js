@@ -18,7 +18,7 @@ exports.userRegister = (request, response) => {
         if(error) {
             response.send(error);
         } else {
-            const userExists = registeredUsers.length > 0;
+            const userExists = registeredUsers.rows.length > 0;
             if(!userExists) {
                 const query = `INSERT INTO registered_users (user_name, user_password, submission_date) VALUES ($1, $2, $3)`;
                 const values = [user_name, user_password, submission_date];
